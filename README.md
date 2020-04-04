@@ -1,5 +1,7 @@
 # BigDataExp
 
+本项目为南京大学计算机系2019学年大数据综合实验小组代码共享仓库。
+
 ## 配置SSH
 
 *本配置为RedHat或CentOS下配置SSH方法*
@@ -48,4 +50,35 @@ Hi ....! You've successfully authenticated, but GitHub does not provide shell ac
 
 ## 分支设置
 
+1. 新建自己的分支
+
+```shell
+git checkout -b yourbranchname
+```
+
+2. 修改后本地提交，有重大更新时可写更新日志
+
+```shell
+git add *
+git commit -m "Update something"
+```
+
+3.  提交前先拉取最新版本
+
+```shell
+git pull origin master:master
+git merge master
+```
+
+4. 将修改提交到远端
+
+```shell
+git push origin yourbranchname:master
+```
+
+## 更新日志
+
+> 2020.4.4
+>
+> - 创建项目，添加README和实验工程存放的文件夹
 
