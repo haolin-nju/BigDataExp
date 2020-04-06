@@ -2,14 +2,16 @@
 
 本项目为南京大学计算机系2019学年大数据综合实验小组代码共享仓库。
 
-## Table of Contents
-* [Configure SSH](#configure-ssh)
-* [Set up Branch](#set-up-branch)
-* [Configure IDEA](#configure-idea)
-* [Pack jar Package](#pack-jar-package)
-* [Update Logs](#update-logs)
+## 目录
+- 配置SSH
+- 配置Git分支
+- 用IDEA开发Hadoop
+  - 配置IDEA
+  - 打包jar包
+- 更新日志
 
-## Configure SSH
+
+## 配置SSH
 
 *本配置为RedHat或CentOS下配置SSH方法*
 
@@ -55,7 +57,7 @@ Hi ....! You've successfully authenticated, but GitHub does not provide shell ac
 
 提示说明成功
 
-## Set up Branch
+## 配置Git分支
 
 1. 新建自己的分支
 
@@ -63,7 +65,7 @@ Hi ....! You've successfully authenticated, but GitHub does not provide shell ac
 git checkout -c yourbranchname
 ```
 
-2. 修改后本地提交，有重大更新时可写[更新日志](#update-logs)
+2. 修改后本地提交，有重大更新时可写更新日志
 
 ```shell
 git add *
@@ -83,9 +85,10 @@ git merge master
 git push origin yourbranchname:master
 ```
 
-## Configure IDEA
+## 用IDEA开发Hadoop
+### 配置IDEA
 
-1. 主要参考网址：[Hadoop: Intellij结合Maven本地运行和调试MapReduce程序 (无需搭载Hadoop和HDFS环境)](https://www.polarxiong.com/archives/Hadoop-Intellij%E7%BB%93%E5%90%88Maven%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C%E5%92%8C%E8%B0%83%E8%AF%95MapReduce%E7%A8%8B%E5%BA%8F-%E6%97%A0%E9%9C%80%E6%90%AD%E8%BD%BDHadoop%E5%92%8CHDFS%E7%8E%AF%E5%A2%83.html)
+1. 主要参考网页：[Hadoop: Intellij结合Maven本地运行和调试MapReduce程序 (无需搭载Hadoop和HDFS环境)](https://www.polarxiong.com/archives/Hadoop-Intellij%E7%BB%93%E5%90%88Maven%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C%E5%92%8C%E8%B0%83%E8%AF%95MapReduce%E7%A8%8B%E5%BA%8F-%E6%97%A0%E9%9C%80%E6%90%AD%E8%BD%BDHadoop%E5%92%8CHDFS%E7%8E%AF%E5%A2%83.html)
 
 2. 需要额外配置源加速maven框架内依赖的下载速度，打开~/.m2文件夹，配置settings.xml文件：
 
@@ -203,11 +206,11 @@ vim settings.xml
 
 4. 其余按照网址内配置。若有其它需要，直接修改pom.xml即可
 
-## Pack jar Package
+### 打包jar包
 
 按照网页[IDEA 开发hadoop项目配置及打包](https://blog.csdn.net/a377987399/article/details/80510776)下“二、IDEA开发hadoop项目打包”操作即可
 
-## Update Logs
+## 更新日志
 
 > 2020.4.4
 > > 创建项目，添加README和实验工程存放的文件夹
@@ -215,6 +218,6 @@ vim settings.xml
 > 2020.4.6
 > > 完成Lab2的基础功能和选做1
 > >
-> > 新增IDEA配置MapReduce开发环境的说明
+> > 新增IDEA配置MapReduce开发环境及打包说明
 > >
 > > 完成Lab2的选做2
