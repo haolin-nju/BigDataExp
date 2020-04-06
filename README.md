@@ -63,7 +63,7 @@ Hi ....! You've successfully authenticated, but GitHub does not provide shell ac
 git checkout -c yourbranchname
 ```
 
-2. 修改后本地提交，有重大更新时可写[更新日志](update-logs)
+2. 修改后本地提交，有重大更新时可写[更新日志](#update-logs)
 
 ```shell
 git add *
