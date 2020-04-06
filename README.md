@@ -53,7 +53,7 @@ Hi ....! You've successfully authenticated, but GitHub does not provide shell ac
 1. 新建自己的分支
 
 ```shell
-git checkout -b yourbranchname
+git switch -c yourbranchname
 ```
 
 2. 修改后本地提交，有重大更新时可写更新日志
@@ -79,6 +79,8 @@ git push origin yourbranchname:master
 ## 更新日志
 
 > 2020.4.4
->
-> - 创建项目，添加README和实验工程存放的文件夹
+> > 创建项目，添加README和实验工程存放的文件夹
+
+> 2020.4.6
+> > 完成Lab2的基础功能和选做1
 
