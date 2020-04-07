@@ -18,8 +18,6 @@ import java.util.StringTokenizer;
 import java.util.LinkedList;
 
 public class TFIDF {
-    private static int DocSum;
-
     public static class TFIDFMapper extends Mapper<Object, Text, Text, IntWritable>{
 
         @Override
@@ -39,7 +37,7 @@ public class TFIDF {
                 }
             }
             for (HashMap.Entry<String, Integer> entry : hashMap.entrySet()) {
-                context.write(new Text(author + "," + entry.getKey()), new IntWritable(entry.getValue()));
+                context.write(new Text( entry.getKey() + "," + author ), new IntWritable(entry.getValue()));
             }
         }
     }
@@ -48,7 +46,7 @@ public class TFIDF {
         @Override
         public int getPartition(Text key, IntWritable value, int numReduceTasks) {
             //对单词做partition
-            return super.getPartition(new Text(key.toString().split(",")[1]), value, numReduceTasks);
+            return super.getPartition(new Text(key.toString().split(",")[0]), value, numReduceTasks);
         }
     }
 
@@ -59,22 +57,29 @@ public class TFIDF {
         private int cnt;
         //how many times
         private int tf;
-
+        private int DocSum;
         private LinkedList<String> list;
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
+
             list = new LinkedList<>();
             Word = "";
             Author = "";
             cnt = 0;
             tf = 0;
+            Configuration conf = context.getConfiguration();
+            DocSum = Integer.parseInt(conf.get("DocSum"));
+
         }
 
         @Override
         protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-            String author = key.toString().split(",")[0];
-            String word = key.toString().split(",")[1];
+            //在mapper或reducer中，
+
+            String word = key.toString().split(",")[0];
+            String author = key.toString().split(",")[1];
+
             int sum = 0;
             for(IntWritable value: values){
                 sum += value.get();
@@ -95,7 +100,7 @@ public class TFIDF {
                 }
                 double idf = Math.log((double)DocSum/ (cnt + 1));
                 for(String str: list){
-                    context.write(new Text(str+String.valueOf(idf)), new Text());
+                    context.write(new Text(str + String.valueOf(idf)), new Text());
                 }
                 list.clear();
                 cnt = 0;
@@ -114,7 +119,7 @@ public class TFIDF {
             tf = 0;
             double idf = Math.log((double)DocSum/ (cnt + 1));
             for(String str: list){
-                context.write(new Text(str + idf), new Text(String.valueOf(idf)));
+                context.write(new Text(str + String.valueOf(idf)), new Text());
             }
             list.clear();
             cnt = 0;
@@ -125,8 +130,10 @@ public class TFIDF {
         Configuration conf = new Configuration();
         FileSystem hdfs=FileSystem.get(conf);
         FileStatus[] stats =hdfs.listStatus(new Path(args[0]));
-        DocSum = stats.length;
+        int DocSum = stats.length;
         hdfs.close();
+        //全局变量传递
+        conf.set("DocSum", String.valueOf(DocSum));
 
         Job job = Job.getInstance(conf, "TFIDF");
         job.setJarByClass(TFIDF.class);
@@ -139,5 +146,6 @@ public class TFIDF {
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
         System.exit(job.waitForCompletion(true) ? 0 : 1);
+
     }
 }
