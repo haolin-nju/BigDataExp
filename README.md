@@ -202,15 +202,20 @@ vim settings.xml
 </project>
 ```
 
-其中有几个数字需要说明：版本1.2.1是最新版，2.7.7是hadoop版本，1.8是jdk版本
+其中有几个数字需要说明：版本1.2.1是core的最新版，2.7.7是hadoop版本，1.8是jdk版本
 
 4. 其余按照网址内配置。若有其它需要，直接修改pom.xml即可
 
 ### 打包jar包
 
-~~按照网页[IDEA 开发hadoop项目配置及打包](https://blog.csdn.net/a377987399/article/details/80510776)下“二、IDEA开发hadoop项目打包”操作即可~~
+按照网页[IDEA 开发hadoop项目配置及打包](https://blog.csdn.net/a377987399/article/details/80510776)下“二、IDEA开发hadoop项目打包”操作即可
 
-**虽然用依赖打包可以直接运行，但是jar包较大，而若不用依赖打包则会出错。方法待更新。**
+**注意！不包含依赖的打包方法：**
+
+- 第2步“……选择JAR,再选择第二个选项”应该更改为“……选择JAR,再选择第一个选项”，即不包含依赖打包
+- 接着，需要将本工程的compile output作为Module加入jar包内
+- 最后点击右下角Apply，OK完成设置
+- 直接进入第5步“点击Build按钮，选择Build Artifacts...”。
 
 ## 更新日志
 
@@ -221,5 +226,6 @@ vim settings.xml
 > > 完成Lab2的基础功能和选做1
 > >
 > > 新增IDEA配置MapReduce开发环境及打包说明
-> >
+>
+> 2020.4.7
 > > 完成Lab2的选做2
