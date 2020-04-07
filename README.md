@@ -62,7 +62,7 @@ Hi ....! You've successfully authenticated, but GitHub does not provide shell ac
 1. 新建自己的分支
 
 ```shell
-git checkout -c yourbranchname
+git checkout -b yourbranchname
 ```
 
 2. 修改后本地提交，有重大更新时可写更新日志
@@ -208,7 +208,9 @@ vim settings.xml
 
 ### 打包jar包
 
-按照网页[IDEA 开发hadoop项目配置及打包](https://blog.csdn.net/a377987399/article/details/80510776)下“二、IDEA开发hadoop项目打包”操作即可
+~~按照网页[IDEA 开发hadoop项目配置及打包](https://blog.csdn.net/a377987399/article/details/80510776)下“二、IDEA开发hadoop项目打包”操作即可~~
+
+**虽然用依赖打包可以直接运行，但是jar包较大，而若不用依赖打包则会出错。方法待更新。**
 
 ## 更新日志
 
