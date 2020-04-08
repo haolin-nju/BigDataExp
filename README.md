@@ -8,6 +8,7 @@
 - 用IDEA开发Hadoop
   - 配置IDEA
   - 打包jar包
+- 用Shell连接远程集群执行任务
 - 更新日志
 
 
@@ -217,10 +218,47 @@ vim settings.xml
 - 最后点击右下角Apply，OK完成设置
 - 直接进入第5步“点击Build按钮，选择Build Artifacts...”。
 
+## 用Shell连接远程集群执行任务
+
+1. 进入本地待上传文件的目录
+2. 将文件用scp命令上传到远程服务器，这里以lab2的TFIDF.jar文件为例：
+
+```shell
+scp TFIDF.jar 2020st42@114.212.190.95:/home/2020st42/lab2/TFIDF.jar
+```
+
+服务器内即使不存在lab2目录，该命令也可以直接建立该目录并把本地的TFIDF.jar文件直接写入服务器指定路径
+
+3. ssh登录远端服务器：
+
+```shell
+ssh 2020st42@114.212.190.95
+```
+
+密码即为登陆密码，登录成功后可以用linux文件系统的命令检查刚刚上传的文件是否存在
+
+4. 以lab2的TFIDF任务为例，进入lab2目录，直接向集群用命令提交任务即可：
+
+```shell
+cd lab2/
+hadoop jar TFIDF.jar TFIDF /data/exercise_2 /user/2020st42/lab2/TFIDF_output
+```
+
+本次输入的数据文件在/data/exercise_2目录下，输出到lab2/TFIDF_output目录下
+
+5. 检查输出文件夹和其中一个输出文件：
+
+```shell
+hdfs dfs -ls /user/2020st42/lab2/TFIDF_output
+hdfs dfs -cat /user/2020st42/lab2/TFIDF_output/part-r-00000
+```
+
+其余输出文件同理可以查看
+
 ## 更新日志
 
 > 2020.4.4
-> > 创建项目，添加README和实验工程存放的文件夹
+> > 创建项目，新增README和实验工程存放的文件夹
 >
 > 2020.4.6
 > > 完成Lab2的基础功能和选做1
@@ -229,3 +267,7 @@ vim settings.xml
 >
 > 2020.4.7
 > > 完成Lab2的选做2
+>
+> 2020.4.8
+> > 新增用Shell连接远程集群执行任务的方法
+>
