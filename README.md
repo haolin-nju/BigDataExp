@@ -218,6 +218,48 @@ vim settings.xml
 - 最后点击右下角Apply，OK完成设置
 - 直接进入第5步“点击Build按钮，选择Build Artifacts...”。
 
+## 用vscode开发Hadoop
+
+### 插件依赖
+
+微软的Java Extension Pack，自动安装六个其他常用Java插件。
+
+### 参数配置
+
+注意，不要使用带有`.classpath`或`.project`的目录，否则会使`settings.json`实效。在`.vscode/settings.json`中使用以下配置：
+```json
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/opt/hadoop/**/*.jar"  // 本地hadoop目录
+    ]
+}
+```
+
+### 运行调试
+
+启用Debugger for Java插件之后，`main`函数上方出现Run和Debug按钮，点击即可。
+
+### 导出jar包
+
+vscode暂时不支持此功能，需要手动打包：
+
+1. 声明环境变量，添加Hadoop的包
+```shell
+export CLASSPATH=`hadoop classpath`:$CLASSPATH
+```
+
+2. 编译，将`src`文件夹的`.java`文件全部编译，`-d .`指定编译结果放在当前目录，即`bin`目录
+```shell
+cd bin
+javac ../src/*.java -d .
+```
+
+3. 打包，注意当前必须是`bin`目录，否则打包结构错误，无法在Hadoop平台运行，参数`c`用于命令创建档案，`f`用于指定档案名
+```shell
+jar cf invertedindex.jar Inverted*.class
+```
+
 ## 用Shell连接远程集群执行任务
 
 1. 进入本地待上传文件的目录
@@ -271,3 +313,5 @@ hdfs dfs -cat /user/2020st42/lab2/TFIDF_output/part-r-00000
 > 2020.4.8
 > > 新增用Shell连接远程集群执行任务的方法
 >
+> 2020.4.9
+> > 完善Lab2注释，新增vscode开发Hadoop方法

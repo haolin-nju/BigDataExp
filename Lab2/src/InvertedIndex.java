@@ -14,6 +14,7 @@ public class InvertedIndex {
         job.setMapperClass(InvertedIndexMapper.class);
         job.setPartitionerClass(InvertedIndexPartitioner.class);
         job.setReducerClass(InvertedIndexReducer.class);
+        // 必须指定Map输出类型，否则默认与最终输出类型一样
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
         job.setOutputKeyClass(Text.class);
