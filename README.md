@@ -231,7 +231,7 @@ vim settings.xml
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "/opt/hadoop/**/*.jar"  // 本地hadoop目录
+        "/opt/hadoop/**/*.jar"
     ]
 }
 ```
@@ -314,4 +314,6 @@ hdfs dfs -cat /user/2020st42/lab2/TFIDF_output/part-r-00000
 > > 新增用Shell连接远程集群执行任务的方法
 >
 > 2020.4.9
-> > 完善Lab2注释，新增vscode开发Hadoop方法
+> > 完善Lab2注释
+> >
+> > 新增vscode开发Hadoop方法
