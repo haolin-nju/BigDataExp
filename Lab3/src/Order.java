@@ -57,7 +57,7 @@ public class Order implements WritableComparable<Order> {
     // 重写该函数，使得文本输出用Tab分隔
     @Override
     public String toString() {
-        return oid + "\t" + odate + "\t" + pid + "\t" + pname + "\t" + price + "\t" + oamount;
+        return oid + " " + odate + " " + pid + " " + pname + " " + price + " " + oamount;
     }
 
     public int getPid() {
