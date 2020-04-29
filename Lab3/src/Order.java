@@ -54,7 +54,7 @@ public class Order implements WritableComparable<Order> {
         return pid == o.pid ? (o.pname.equals(pname) ? oid - o.oid : o.pname.compareTo(pname)) : pid - o.pid;
     }
 
-    // 重写该函数，使得文本输出用Tab分隔
+    // 重写该函数，使得文本输出用空格分隔
     @Override
     public String toString() {
         return oid + " " + odate + " " + pid + " " + pname + " " + price + " " + oamount;
