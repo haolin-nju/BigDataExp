@@ -268,7 +268,7 @@ jar cf invertedindex.jar Inverted*.class
 scp TFIDF.jar 2020st42@114.212.190.95:/home/2020st42/lab2/TFIDF.jar
 ```
 
-服务器内即使不存在lab2目录，该命令也可以直接建立该目录并把本地的TFIDF.jar文件直接写入服务器指定路径
+服务器内需要存在lab2目录，该命令才可以把本地的TFIDF.jar文件直接写入服务器指定路径
 
 3. ssh登录远端服务器：
 
@@ -320,3 +320,7 @@ hdfs dfs -cat /user/2020st42/lab2/TFIDF_output/part-r-00000
 > 2020.4.29
 >
 > > 完成Lab3，更新Lab4
+>
+> 2020.5.5
+>
+> > 完成Lab4
