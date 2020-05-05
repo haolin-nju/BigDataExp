@@ -11,7 +11,6 @@
 - 用Shell连接远程集群执行任务
 - 更新日志
 
-
 ## 配置SSH
 
 *本配置为RedHat或CentOS下配置SSH方法*
@@ -317,3 +316,7 @@ hdfs dfs -cat /user/2020st42/lab2/TFIDF_output/part-r-00000
 > > 完善Lab2注释
 > >
 > > 新增vscode开发Hadoop方法
+>
+> 2020.4.29
+>
+> > 完成Lab3，更新Lab4
