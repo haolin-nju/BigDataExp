@@ -15,23 +15,21 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 public class SecondSort {
-    public static class SecondSortMapper extends Mapper<Text, Text, SSPair, NullWritable> {
+    public static class SecondSortMapper extends Mapper<Text, Text, SSPair, IntWritable> {
         @Override
         protected void map(Text key, Text value, Context context) throws IOException, InterruptedException {
             // Input as key: first number, value: second number
-            // Output as key: SSPair, value: NullWritable
-            String buffer[] = new String[2];
-            buffer[0] = key.toString();
-            buffer[1] = value.toString();
-            SSPair pair = new SSPair(buffer);
-            context.write(pair, NullWritable.get());
+            // Output as key: SSPair, value: IntWritable
+            int first = Integer.parseInt(key.toString());
+            int second = Integer.parseInt(value.toString());
+            context.write(new SSPair(first, second), new IntWritable(second));
         }
     }
 
-    public static class SecondSortPartitioner extends HashPartitioner<SSPair, NullWritable> {
+    public static class SecondSortPartitioner extends HashPartitioner<SSPair, IntWritable> {
         @Override
-        public int getPartition(SSPair key, NullWritable value, int numReduceTasks) {
-            // Distribute keys according to first number
+        public int getPartition(SSPair key, IntWritable value, int numReduceTasks) {
+            // Distribute keys according to the first number
             return key.getFirst() % numReduceTasks;
         }
     }
@@ -42,10 +40,10 @@ public class SecondSort {
         public SSPair(){
             super();
         }
-        public SSPair(String[] buffer){
+        public SSPair(int f, int s){
             super();
-            first = Integer.parseInt(buffer[0]);
-            second = Integer.parseInt(buffer[1]);
+            first = f;
+            second = s;
         }
         public int getFirst(){
             return first;
@@ -90,13 +88,13 @@ public class SecondSort {
         }
     }
 
-    public static class SecondSortReducer extends Reducer<SSPair, NullWritable, IntWritable, IntWritable> {
+    public static class SecondSortReducer extends Reducer<SSPair, IntWritable, IntWritable, IntWritable> {
         @Override
-        protected void reduce(SSPair key, Iterable<NullWritable> values, Context context)
+        protected void reduce(SSPair key, Iterable<IntWritable> values, Context context)
                 throws IOException, InterruptedException {
             // Output all sorted pairs in key: first number, value: second number
-            for(NullWritable value : values){
-                context.write(new IntWritable(key.getFirst()), new IntWritable(key.getSecond()));
+            for(IntWritable value : values){
+                context.write(new IntWritable(key.getFirst()), value);
             }
         }
     }
@@ -112,7 +110,7 @@ public class SecondSort {
         job.setGroupingComparatorClass(SecondSortGroupingComparator.class);
 
         job.setMapOutputKeyClass(SSPair.class);
-        job.setMapOutputValueClass(NullWritable.class);
+        job.setMapOutputValueClass(IntWritable.class);
         job.setOutputKeyClass(IntWritable.class);
         job.setOutputValueClass(IntWritable.class);
         job.setInputFormatClass(KeyValueTextInputFormat.class);
