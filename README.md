@@ -324,3 +324,7 @@ hdfs dfs -cat /user/2020st42/lab2/TFIDF_output/part-r-00000
 > 2020.5.5
 >
 > > 完成Lab4
+>
+> 2020.7.1
+>
+> > 完成FinalLab任务一和任务二
