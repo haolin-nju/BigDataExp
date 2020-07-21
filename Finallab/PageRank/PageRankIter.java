@@ -1,4 +1,5 @@
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
@@ -7,14 +8,15 @@ import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FileStatus;
 
 import java.io.*;
+import java.util.Scanner;
 
 public class PageRankIter {
 //    private static int row_cnt = 0;
-    private enum LineCounter{
-        LINE_COUNTER
-    }
+
     public static class PageRankIterMapper extends Mapper<Text, Text, Text, Text> {
         @Override
         protected void map(Text key, Text value, Context context) throws IOException, InterruptedException {
@@ -26,12 +28,7 @@ public class PageRankIter {
             String[] arr = link_list.substring(1, link_list.length() - 1).split("\\|");
             int list_len = arr.length;
             for (String ss : arr) {
-                try {
-                    context.write(new Text(ss.split(",")[0]), new Text(String.valueOf(cur_rank / list_len)));
-                }
-                catch (Exception e) {
-                    System.exit(1);
-                }
+                context.write(new Text(ss.split(",")[0]), new Text(String.valueOf(cur_rank / list_len)));
             }
             context.write(key, new Text(link_list));
 //            Counter counter = context.getCounter(LineCounter.LINE_COUNTER);
@@ -46,8 +43,11 @@ public class PageRankIter {
         private static long row_cnt;
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
-            row_cnt = context.getConfiguration().getLong("line_num",0L);
+            row_cnt = Long.valueOf(context.getConfiguration().get("line_num"));
 //            System.out.println(row_cnt);
+            if (row_cnt < 1e-6) {
+                System.exit(100);
+            }
         }
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
@@ -66,19 +66,21 @@ public class PageRankIter {
             }
 //            System.out.println(row_cnt);
             double new_rank = 1.0;
-            try {
-                new_rank = (1 - d) / row_cnt + val * d;
-            }
-            catch (Exception e){
+            if (row_cnt < 1e-6){
                 System.exit(1);
             }
-            System.out.println(new_rank);
+            new_rank = (1 - d) / row_cnt + val * d;
+//            if (Double.isInfinite(new_rank)){
+//                System.exit(1);
+//            }
+//            System.out.println(new_rank);
             context.write(key, new Text(new_rank + " " + link_list));
         }
     }
-    public static void iter(String args[], int row_cnt) throws IOException, ClassNotFoundException, InterruptedException{
+    public static void main(String args[], long row_cnt) throws IOException, ClassNotFoundException, InterruptedException{
         Configuration conf = new Configuration();
-        conf.setLong("line_num",row_cnt);
+        conf.set("line_num",String.valueOf(row_cnt));
+
         Job job = new Job(conf, "PageRank Iter");
         job.setJarByClass(PageRankIter.class);
 

@@ -64,7 +64,7 @@ public class PageRankViewer {
             context.write(new Text(key.getName()), new Text(Double.toString(key.getPr())));
         }
     }
-    public static void view(String args[]) throws IOException, ClassNotFoundException, InterruptedException{
+    public static void main(String args[]) throws IOException, ClassNotFoundException, InterruptedException{
         Configuration conf = new Configuration();
         Job job = new Job(conf, "PageRank Viewer");
         job.setJarByClass(PageRankViewer.class);
@@ -80,7 +80,7 @@ public class PageRankViewer {
         job.setInputFormatClass(KeyValueTextInputFormat.class);// read by row so that output by row
         job.setOutputFormatClass(TextOutputFormat.class);// output by row to each file
 
-        job.setNumReduceTasks(5);// because there are 5 novels for JinYong
+        job.setNumReduceTasks(1);// because there are 1 novels for JinYong
 
         FileInputFormat.setInputPaths(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
