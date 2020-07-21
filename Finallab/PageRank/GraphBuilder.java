@@ -6,6 +6,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -16,18 +17,23 @@ import java.util.Scanner;
 
 public class GraphBuilder {
     public static class GraphBuilderMapper extends Mapper<Text, Text, Text, Text> {
+        private static int row_cnt;
+        @Override
+        protected void setup(Mapper.Context context) throws IOException, InterruptedException {
+            row_cnt = Integer.valueOf(context.getConfiguration().get("Line Count"));
+        }
         @Override
         protected void map(Text key, Text value, Context context) throws IOException, InterruptedException {
             // just set 1 to the cur_rank before link_list
-            context.write(key, new Text("1" + value));
+            context.write(key, new Text("" + 1.0 / row_cnt + value));
         }
     }
 
-    public static long main(String args[]) throws IOException, ClassNotFoundException, InterruptedException{
+    public static int main(String args[]) throws IOException, ClassNotFoundException, InterruptedException{
         Configuration conf = new Configuration();
         //ref Book P88-89
         FileSystem hdfs = FileSystem.get(conf);
-        long row_cnt = 0;
+        int row_cnt = 0;
         String str;
         FSDataInputStream in = null;
         Scanner scan;
@@ -48,7 +54,8 @@ public class GraphBuilder {
         catch(IOException e){
             e.printStackTrace();
         }
-        System.out.println(row_cnt);
+//        System.out.println(row_cnt);
+        conf.set("Line Count",String.valueOf(row_cnt));
 
         Job job = new Job(conf, "Graph Builder");
         job.setJarByClass(GraphBuilder.class);

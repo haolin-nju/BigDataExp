@@ -30,10 +30,10 @@ public class PageRankIter {
 
     public static class PageRankIterReducer extends Reducer<Text, Text, Text, Text> {
         private static final double d = 0.85;// ref: PPT Ch8 Page15
-        private static long row_cnt;
+        private static int row_cnt;
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
-            row_cnt = Long.valueOf(context.getConfiguration().get("line_num"));
+            row_cnt = Integer.valueOf(context.getConfiguration().get("line_num"));
 //            System.out.println(row_cnt);
             if (row_cnt < 1e-6) {
                 System.exit(100);
@@ -64,11 +64,11 @@ public class PageRankIter {
             context.write(key, new Text(new_rank + " " + link_list));
         }
     }
-    public static void main(String args[], long row_cnt) throws IOException, ClassNotFoundException, InterruptedException{
+    public static void main(String args[], int row_cnt, int itr_time) throws IOException, ClassNotFoundException, InterruptedException{
         Configuration conf = new Configuration();
         conf.set("line_num",String.valueOf(row_cnt));
 
-        Job job = new Job(conf, "PageRank Iter");
+        Job job = new Job(conf, "PageRank Iter" + itr_time);
         job.setJarByClass(PageRankIter.class);
 
         job.setMapperClass(PageRankIter.PageRankIterMapper.class);
