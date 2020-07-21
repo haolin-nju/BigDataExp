@@ -1,21 +1,15 @@
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileStatus;
 
 import java.io.*;
-import java.util.Scanner;
 
 public class PageRankIter {
-//    private static int row_cnt = 0;
 
     public static class PageRankIterMapper extends Mapper<Text, Text, Text, Text> {
         @Override
@@ -31,13 +25,9 @@ public class PageRankIter {
                 context.write(new Text(ss.split(",")[0]), new Text(String.valueOf(cur_rank / list_len)));
             }
             context.write(key, new Text(link_list));
-//            Counter counter = context.getCounter(LineCounter.LINE_COUNTER);
-//            counter.increment(1L);
-//            context.getConfiguration().setLong("line_num",counter.getValue());
-//            System.out.println(context.getConfiguration().getLong("line_num",0));
-//            row_cnt += 1;
         }
     }
+
     public static class PageRankIterReducer extends Reducer<Text, Text, Text, Text> {
         private static final double d = 0.85;// ref: PPT Ch8 Page15
         private static long row_cnt;
@@ -64,16 +54,13 @@ public class PageRankIter {
                     val += Double.valueOf(cur_text);
                 }
             }
-//            System.out.println(row_cnt);
+
             double new_rank = 1.0;
             if (row_cnt < 1e-6){
                 System.exit(1);
             }
             new_rank = (1 - d) / row_cnt + val * d;
-//            if (Double.isInfinite(new_rank)){
-//                System.exit(1);
-//            }
-//            System.out.println(new_rank);
+
             context.write(key, new Text(new_rank + " " + link_list));
         }
     }

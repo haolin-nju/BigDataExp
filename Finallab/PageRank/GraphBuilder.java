@@ -15,38 +15,13 @@ import java.io.*;
 import java.util.Scanner;
 
 public class GraphBuilder {
-//    private static int row_cnt = 0;
-//    private static double init_pr_value = 0;
-    enum LineCounter{
-        LINE_COUNTER
-    }
-
     public static class GraphBuilderMapper extends Mapper<Text, Text, Text, Text> {
         @Override
         protected void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+            // just set 1 to the cur_rank before link_list
             context.write(key, new Text("1" + value));
-//            context.getCounter(LineCounter.LINE_COUNTER).increment(1L);
-//            counter.increment(1L);
-//            System.out.println(context.getCounter(TaskCounter.MAP_INPUT_RECORDS).getValue());
-//            context.getCounter(LineCounter.LINE_COUNTER).;
-//            counter.increment(1L);
         }
     }
-
-//    public static class GraphBuilderReducer extends Reducer<Text, Text, Text, Text> {
-////        @Override
-////        protected void setup(Reducer<Text, Text, Text, Text>.Context context) {
-////            init_pr_value = 1.0 / row_cnt;
-//////            System.out.println(init_pr_value);
-////        }
-//        @Override
-//        protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-//            for(Text t : values){
-////                context.write(key, new Text("" + init_pr_value + t));
-//                context.write(key, new Text("1" + t));
-//            }
-//        }
-//    }
 
     public static long main(String args[]) throws IOException, ClassNotFoundException, InterruptedException{
         Configuration conf = new Configuration();
