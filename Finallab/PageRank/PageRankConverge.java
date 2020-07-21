@@ -15,17 +15,20 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Scanner;
+import java.util.*;
 
 public class PageRankConverge {
+    private static int pr_row_cnt;
     public static class NamePR{
         private String name;
         private double pr;
         public NamePR(String str, double pr_){
             this.name = str;
             this.pr = pr_;
+        }
+        public NamePR(NamePR npr){
+            this.name = npr.getName();
+            this.pr = npr.getPR();
         }
         public String getName() {
             return name;
@@ -40,14 +43,14 @@ public class PageRankConverge {
             this.pr = pr_;
         }
     }
-    public static class NamePRComparator implements Comparator<NamePR> {
+    static Comparator<NamePR> NamePRComparator = new Comparator<NamePR>() {
         @Override
         public int compare(NamePR o1, NamePR o2) {
             double pr1 = o1.getPR();
             double pr2 = o2.getPR();
             return pr1 == pr2 ? 0 : pr1 < pr2 ? 1 : -1;
         }
-    }
+    };
     private static void GetNameList(NamePR[] lines, FileSystem hdfs, FileStatus[] stats, FSDataInputStream in, Scanner scan) throws IOException{
         int cur_idx = 0;
         String[] cur_line;
@@ -63,7 +66,20 @@ public class PageRankConverge {
             in.close();
         }
     }
+    public static String[] topKFrequent(NamePR[] lines,  int k) {
+        // TopK Algorithm, time complexity: O(NlogK)
+        Queue<NamePR> que = new PriorityQueue<>(NamePRComparator);
+        String[] result = new String[k];
+        for(int i=0;i<pr_row_cnt;++i) {
+            que.add(lines[i]);
+        }
+        for(int i = 0;i < k; ++i){
+            result[i] = que.poll().getName();
+        }
+        return result;
+    }
     public static boolean main(String args[], int row_cnt) throws IOException, ClassNotFoundException, InterruptedException {
+        pr_row_cnt = row_cnt;
         Configuration conf = new Configuration();
         FileSystem hdfs = FileSystem.get(conf);
         NamePR[] lines_old = new NamePR[row_cnt];
@@ -82,11 +98,13 @@ public class PageRankConverge {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Comparator cmp = new NamePRComparator();
-        Arrays.sort(lines_old, cmp);
-        Arrays.sort(lines_new, cmp);
-        for (int i = 0; i < row_cnt / 10; ++i) { // the top row_cnt / 10 is converged
-            if (lines_old[i].getName().equals(lines_new[i].getName()) == false) {
+
+        int total_cmp = row_cnt / 10;
+        String[] topk_name_old = topKFrequent(lines_old, total_cmp);
+        String[] topk_name_new = topKFrequent(lines_new, total_cmp);
+
+        for (int i = 0; i < total_cmp; ++i) { // the top row_cnt / 10 is converged
+            if (topk_name_old[i].equals(topk_name_new[i]) == false) {
                 return false;
             }
         }
