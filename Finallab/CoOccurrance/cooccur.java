@@ -3,6 +3,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
@@ -13,7 +14,6 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import java.io.*;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 public class cooccur {
@@ -67,15 +67,24 @@ public class cooccur {
             }
             i = 0;
             for(; i < newline.length; i ++){
-                for(int j = i + 1; j < newline.length; j ++){
-                    PairOfText addpair = new PairOfText();
-                    addpair.set(new Text(newline[i]), new Text(newline[j]));
-                    context.write(addpair, new IntWritable(1));
+                int j = 0;
+                for(; j < newline.length; j ++){
+                    if ( i != j ) {
+                        PairOfText addpair = new PairOfText();
+                        addpair.set(new Text(newline[i]), new Text(newline[j]));
+                        context.write(addpair, new IntWritable(1));
+                    }
                 }
             }
         }
     }
+    public static class CooccurPartitioner extends Partitioner<PairOfText, IntWritable>{
+        @Override
+        public int getPartition(PairOfText key, IntWritable value, int numPartitions){
+            return ( key.getFirst().hashCode() & Integer.MAX_VALUE ) % numPartitions;
+        }
 
+    }
     public static class CooccurReducer extends Reducer<PairOfText, IntWritable, Text, IntWritable> {
         @Override
         protected void reduce(PairOfText key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
@@ -93,6 +102,7 @@ public class cooccur {
 
         job.setMapperClass(cooccur.CooccurMapper.class);
         job.setReducerClass(cooccur.CooccurReducer.class);
+        job.setPartitionerClass(cooccur.CooccurPartitioner.class);
 
         job.setMapOutputKeyClass(PairOfText.class);
         job.setMapOutputValueClass(IntWritable.class);
@@ -102,7 +112,7 @@ public class cooccur {
         job.setInputFormatClass(TextInputFormat.class);// read by row so that output by row
         job.setOutputFormatClass(TextOutputFormat.class);// output by row to each file
 
-        job.setNumReduceTasks(5);// because there are 5 novels for JinYong
+        job.setNumReduceTasks(5);// because there are 15 novels for JinYong
 
         FileInputFormat.setInputPaths(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
