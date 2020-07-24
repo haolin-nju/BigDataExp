@@ -20,9 +20,10 @@ public class PageRankIter {
             double cur_rank = Double.valueOf(rank_and_list[0]);
             String link_list = rank_and_list[1];
             String[] arr = link_list.substring(1, link_list.length() - 1).split("\\|");
-            int list_len = arr.length;
+//            int list_len = arr.length;
             for (String ss : arr) {
-                context.write(new Text(ss.split(",")[0]), new Text(String.valueOf(cur_rank / list_len)));
+                String[] cur_out = ss.split(",");
+                context.write(new Text(cur_out[0]), new Text(String.valueOf(cur_rank * Double.valueOf(cur_out[1]))));
             }
             context.write(key, new Text(link_list));
         }
