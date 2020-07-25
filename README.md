@@ -327,4 +327,16 @@ hdfs dfs -cat /user/2020st42/lab2/TFIDF_output/part-r-00000
 >
 > 2020.7.1
 >
-> > 完成FinalLab任务一和任务二
+> > 完成FinalLab任务一和任务二（Preprocess和Cooccurrance）
+>
+> 2020.7.3
+>
+> > 完成Finallab任务三：Normalization
+>
+> 2020.7.20
+>
+> > 完成Finallab任务四：Pageank
+>
+> 2020.7.25
+>
+> > 完成Finallab的PageRank对比实验：Centrality
