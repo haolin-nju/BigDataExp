@@ -29,6 +29,23 @@ public class PageRankIter {
         }
     }
 
+    public static class PageRankIterCombiner extends Reducer<Text, Text, Text, Text>{
+        @Override
+        protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+            double val = 0;
+            for (Text t : values){
+                String cur_text = t.toString();
+                if(cur_text.substring(0,1).equals("[")==true) {
+                    context.write(key, t);
+                }
+                else {
+                    val += Double.valueOf(cur_text);
+                }
+            }
+            context.write(key, new Text(String.valueOf(val)));
+        }
+    }
+
     public static class PageRankIterReducer extends Reducer<Text, Text, Text, Text> {
         private static final double d = 0.85;// ref: PPT Ch8 Page15
         private static int row_cnt;
@@ -73,6 +90,7 @@ public class PageRankIter {
         job.setJarByClass(PageRankIter.class);
 
         job.setMapperClass(PageRankIter.PageRankIterMapper.class);
+        job.setCombinerClass(PageRankIter.PageRankIterCombiner.class);
         job.setReducerClass(PageRankIter.PageRankIterReducer.class);
 
         job.setMapOutputKeyClass(Text.class);

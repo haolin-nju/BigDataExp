@@ -47,7 +47,7 @@ public class PageRankViewer {
         public int compareTo(PageRankDoubleWritable prdw) {
             double prdw_pr = prdw.getPr();
             String prdw_name = prdw.getName();
-            return prdw_pr == pr ? prdw_name.compareTo(str) : (prdw_pr < pr ? -1 : 1);
+            return prdw_pr == pr ? str.compareTo(prdw_name) : (prdw_pr < pr ? -1 : 1);
         }
     }
     public static class PageRankViewerMapper extends Mapper<Text, Text, PageRankDoubleWritable, NullWritable> {

@@ -19,30 +19,38 @@ import java.util.*;
 
 public class PageRankConverge {
     private static int pr_row_cnt;
-    public static class NamePR{
+
+    public static class NamePR {
         private String name;
         private double pr;
-        public NamePR(String str, double pr_){
+
+        public NamePR(String str, double pr_) {
             this.name = str;
             this.pr = pr_;
         }
-        public NamePR(NamePR npr){
+
+        public NamePR(NamePR npr) {
             this.name = npr.getName();
             this.pr = npr.getPR();
         }
+
         public String getName() {
             return name;
         }
+
         public double getPR() {
             return pr;
         }
+
         public void setName(String str) {
             this.name = str;
         }
+
         public void setPR(int pr_) {
             this.pr = pr_;
         }
     }
+
     static Comparator<NamePR> NamePRComparator = new Comparator<NamePR>() {
         @Override
         public int compare(NamePR o1, NamePR o2) {
@@ -51,7 +59,8 @@ public class PageRankConverge {
             return pr1 == pr2 ? 0 : pr1 < pr2 ? 1 : -1;
         }
     };
-    private static void GetNameList(NamePR[] lines, FileSystem hdfs, FileStatus[] stats, FSDataInputStream in, Scanner scan) throws IOException{
+
+    private static void GetNameList(NamePR[] lines, FileSystem hdfs, FileStatus[] stats, FSDataInputStream in, Scanner scan) throws IOException {
         int cur_idx = 0;
         String[] cur_line;
         for (int i = 0; i < stats.length; i++) {
@@ -59,25 +68,27 @@ public class PageRankConverge {
             scan = new Scanner(in);
             while (scan.hasNext()) {
                 cur_line = scan.nextLine().split("\\s+");
-                lines[cur_idx] = new NamePR(cur_line[0],Double.valueOf(cur_line[1]));
+                lines[cur_idx] = new NamePR(cur_line[0], Double.valueOf(cur_line[1]));
                 ++cur_idx;
             }
             scan.close();
             in.close();
         }
     }
-    public static String[] topKFrequent(NamePR[] lines,  int k) {
+
+    public static String[] topKFrequent(NamePR[] lines, int k) {
         // TopK Algorithm, time complexity: O(NlogK)
         Queue<NamePR> que = new PriorityQueue<>(NamePRComparator);
         String[] result = new String[k];
-        for(int i=0;i<pr_row_cnt;++i) {
+        for (int i = 0; i < pr_row_cnt; ++i) {
             que.add(lines[i]);
         }
-        for(int i = 0;i < k; ++i){
+        for (int i = 0; i < k; ++i) {
             result[i] = que.poll().getName();
         }
         return result;
     }
+
     public static boolean main(String args[], int row_cnt) throws IOException, ClassNotFoundException, InterruptedException {
         pr_row_cnt = row_cnt;
         Configuration conf = new Configuration();
@@ -99,15 +110,23 @@ public class PageRankConverge {
             e.printStackTrace();
         }
 
-        int total_cmp = row_cnt / 10;
-        String[] topk_name_old = topKFrequent(lines_old, total_cmp);
-        String[] topk_name_new = topKFrequent(lines_new, total_cmp);
+//        Arrays.sort(lines_old, NamePRComparator);
+//        Arrays.sort(lines_new, NamePRComparator);
+//        for (int i = 0; i < row_cnt; ++i) { // the top row_cnt / 10 is converged
+//            if (lines_old[i].getName().equals(lines_new[i].getName()) == false) {
+//                return false;
+//            }
+//        }
+        int top_cnt = row_cnt / 5;
+        String[] topk_name_old = topKFrequent(lines_old, top_cnt);
+        String[] topk_name_new = topKFrequent(lines_new, top_cnt);
 
-        for (int i = 0; i < total_cmp; ++i) { // the top row_cnt / 10 is converged
+        for (int i = 0; i < top_cnt; ++i) {
             if (topk_name_old[i].equals(topk_name_new[i]) == false) {
                 return false;
             }
         }
+
         return true;
     }
 }
