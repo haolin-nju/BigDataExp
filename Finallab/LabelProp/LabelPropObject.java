@@ -47,7 +47,14 @@ public class LabelPropObject implements WritableComparable<LabelPropObject> {
         return name.hashCode();
     }
     
-    public void fromString(String str) {
+    public void fromString1(String str) {
+        String[] buffer = str.split("\\s+");
+        name = buffer[0];
+        label = 0;
+        prob = 0.0;
+        link = buffer[1];
+    }
+    public void fromString2(String str) {
         String[] buffer = str.split("\t");
         name = buffer[0];
         label = Integer.parseInt(buffer[1]);
