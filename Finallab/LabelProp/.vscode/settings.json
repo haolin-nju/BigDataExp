@@ -1,6 +1,0 @@
-{
-    "java.project.referencedLibraries": [
-        "*/lib/**/*.jar",
-        "/opt/hadoop/**/*.jar"
-    ]
-}
