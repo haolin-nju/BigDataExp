@@ -76,6 +76,16 @@ hadoop jar PageRank.jar PageRankDriver /user/2020st42/finallab/normalization_out
 hadoop jar Centrality.jar CentralityDriver /user/2020st42/finallab/cooccur_output /user/2020st42/finallab/normalization_output /user/2020st42/finallab/centrality_output
 ```
 
-## 任务五：TODO
+## 任务五：LabelProp
+
+本地执行方法不再赘述
+
+### 集群执行方法
+
+- 执行命令
+
+```shell
+hadoop jar LabelProp.jar LabelProp /user/2020st42/finallab/normalization_output /user/2020st42/finallab/labelprop_output
+```
 
 ## 任务六：TODO
