@@ -27,11 +27,11 @@ public class DegreeCentrality {
     }
 
     public static class DegreeCentralityReducer extends Reducer<Text, IntWritable, Text, DoubleWritable> {
-        private static int row_cnt;
+        private static int sum_degree;
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
-            row_cnt = Integer.valueOf(context.getConfiguration().get("Line Count"));
+            sum_degree = Integer.valueOf(context.getConfiguration().get("Line Count"));
         }
 
         @Override
@@ -40,7 +40,7 @@ public class DegreeCentrality {
             for (IntWritable value : values) {
                 degree_cnt += value.get();
             }
-            double dc = degree_cnt / (row_cnt - 1);
+            double dc = degree_cnt / (sum_degree - 1);
             context.write(key, new DoubleWritable(dc));
         }
     }

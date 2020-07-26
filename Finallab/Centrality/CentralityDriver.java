@@ -81,7 +81,7 @@ public class CentralityDriver {
         Integer[] int_arr = new Integer[]{row_cnt, sum};
         System.out.println(int_arr[0]);
         System.out.println(int_arr[1]);
-        DegreeCentrality.main(forDC, int_arr[0]);
+        DegreeCentrality.main(forDC, int_arr[1]);
         EigenVecCentrality.main(forEVC, int_arr);
         SortCentrality.main(SortforDC, "Degree");
         SortCentrality.main(SortforEVC, "EigenVector");
