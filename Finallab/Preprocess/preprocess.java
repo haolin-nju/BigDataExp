@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class preprocess {
-    public static class PreprocessMapper extends Mapper<LongWritable, Text, Text, Text>{
+    public static class PreprocessMapper extends Mapper<LongWritable, Text, Text, Text> {
         Set<String> nameSet = new HashSet<String>();
 
         @Override
@@ -36,15 +36,19 @@ public class preprocess {
 //            FileReader fr = new FileReader(nameFile);
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String line = null;
-            while((line = br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
 //                System.out.println(line);
+//                if(line.equals("汉子") || line.equals("大汉") || line.equals("胖子") || line.equals("渔人")
+//                        || line.equals("农夫") || line.equals("瘦子") || line.equals("铁匠") || line.equals("童子") || line.equals("农妇")){
+//                    continue;
+//                }
                 nameSet.add(line);
             }
         }
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            FileSplit inputSplit = (FileSplit)context.getInputSplit();
+            FileSplit inputSplit = (FileSplit) context.getInputSplit();
             String fileName = inputSplit.getPath().getName();
             String authorName = fileName.split("\\d+")[0];
 
@@ -72,14 +76,29 @@ public class preprocess {
         }
     }
 
+    public static class PreprocessCombiner extends Reducer<Text, Text, Text, Text> {
+        @Override
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+            String str = "";
+            for (Text t : values) {
+                str += (t + ",");
+            }
+            context.write(key, new Text(str.substring(0, str.length() - 1)));
+        }
+    }
+
     public static class PreprocessReducer extends Reducer<Text, Text, Text, NullWritable> {
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            for(Text t : values) {
-                context.write(t, NullWritable.get());
+            for (Text t : values) {
+                String[] str_arr = String.valueOf(t).split(",");
+                for (int i = 0; i < str_arr.length; ++i) {
+                    context.write(new Text(str_arr[i]), NullWritable.get());
+                }
             }
         }
     }
+
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
         conf.set("nameFile", args[0]);
@@ -87,6 +106,7 @@ public class preprocess {
         job.setJarByClass(preprocess.class);
 
         job.setMapperClass(preprocess.PreprocessMapper.class);
+        job.setCombinerClass(preprocess.PreprocessCombiner.class);
         job.setReducerClass(preprocess.PreprocessReducer.class);
 
         job.setMapOutputKeyClass(Text.class);// file name
@@ -97,7 +117,7 @@ public class preprocess {
         job.setInputFormatClass(TextInputFormat.class);// read by row so that output by row
         job.setOutputFormatClass(TextOutputFormat.class);// output by row to each file
 
-        job.setNumReduceTasks(15);// because there are 15 novels for JinYong
+        job.setNumReduceTasks(1);
 
         // Three path args, first: nameList, second: novels, third: outputDir
         FileInputFormat.setInputPaths(job, new Path(args[1]));
