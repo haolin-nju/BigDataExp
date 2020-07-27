@@ -21,23 +21,21 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
-public class preprocess {
-    public static class PreprocessMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class Preprocess {
+    public static class PreprocessMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
         Set<String> nameSet = new HashSet<String>();
 
         @Override
         protected void setup(Mapper.Context context) throws IOException, InterruptedException {
+            // Get all names in name list
             Configuration conf = context.getConfiguration();
-//            String inputDir = ((FileSplit)context.getInputSplit()).getPath().getParent().getParent().toUri().getPath();
             String nameFile = conf.get("nameFile");
             FileSystem fs = FileSystem.get(conf);
             Path remotePath = new Path(nameFile);
             FSDataInputStream in = fs.open(remotePath);
-//            FileReader fr = new FileReader(nameFile);
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String line = null;
             while ((line = br.readLine()) != null) {
-//                System.out.println(line);
 //                if(line.equals("汉子") || line.equals("大汉") || line.equals("胖子") || line.equals("渔人")
 //                        || line.equals("农夫") || line.equals("瘦子") || line.equals("铁匠") || line.equals("童子") || line.equals("农妇")){
 //                    continue;
@@ -48,15 +46,14 @@ public class preprocess {
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+            // Key: Nullwritable, Value: name list for cur line
             FileSplit inputSplit = (FileSplit) context.getInputSplit();
             String fileName = inputSplit.getPath().getName();
             String authorName = fileName.split("\\d+")[0];
 
-            if (authorName.equals("金庸")) {// 必须排除不是金庸的小说
-                //Set key
-                String novelName = fileName.replaceAll("\\D+", "");
-
-                //Set value
+            // must exclude authors other than JinYong
+            if (authorName.equals("金庸")) {
+                // Set value
                 String[] line = value.toString().split(" ");
                 String lineNames = "";
                 int cnt = 0;
@@ -67,33 +64,9 @@ public class preprocess {
                     }
                 }
 
-                //If this line has names, then emit key-val
+                //If this line has >=2 names, then emit key-val
                 if (cnt >= 2) {
-//                System.out.println(novelName + ": " + lineNames);
-                    context.write(new Text(novelName), new Text(lineNames.trim()));
-                }
-            }
-        }
-    }
-
-    public static class PreprocessCombiner extends Reducer<Text, Text, Text, Text> {
-        @Override
-        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            String str = "";
-            for (Text t : values) {
-                str += (t + ",");
-            }
-            context.write(key, new Text(str.substring(0, str.length() - 1)));
-        }
-    }
-
-    public static class PreprocessReducer extends Reducer<Text, Text, Text, NullWritable> {
-        @Override
-        protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            for (Text t : values) {
-                String[] str_arr = String.valueOf(t).split(",");
-                for (int i = 0; i < str_arr.length; ++i) {
-                    context.write(new Text(str_arr[i]), NullWritable.get());
+                    context.write(NullWritable.get(), new Text(lineNames.trim()));
                 }
             }
         }
@@ -102,17 +75,15 @@ public class preprocess {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
         conf.set("nameFile", args[0]);
-        Job job = new Job(conf, "data_preprocess");
-        job.setJarByClass(preprocess.class);
+        Job job = new Job(conf, "Preprocess");
+        job.setJarByClass(Preprocess.class);
 
-        job.setMapperClass(preprocess.PreprocessMapper.class);
-        job.setCombinerClass(preprocess.PreprocessCombiner.class);
-        job.setReducerClass(preprocess.PreprocessReducer.class);
+        job.setMapperClass(Preprocess.PreprocessMapper.class);
 
-        job.setMapOutputKeyClass(Text.class);// file name
+        job.setMapOutputKeyClass(NullWritable.class);// file name
         job.setMapOutputValueClass(Text.class);// paragraph texts
-        job.setOutputKeyClass(Text.class);// paragraph texts
-        job.setOutputValueClass(NullWritable.class);// null
+        job.setOutputKeyClass(NullWritable.class);// paragraph texts
+        job.setOutputValueClass(Text.class);// null
 
         job.setInputFormatClass(TextInputFormat.class);// read by row so that output by row
         job.setOutputFormatClass(TextOutputFormat.class);// output by row to each file

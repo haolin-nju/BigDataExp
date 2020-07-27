@@ -17,10 +17,10 @@
 - 执行命令
 
 ```shell
-hadoop jar preprocess.jar preprocess /MP_Data/task2/People_List_unique.txt /MP_Data/task2/wuxia_novels /user/2020st42/finallab/preprocess_output
+hadoop jar Preprocess.jar Preprocess /MP_Data/task2/People_List_unique.txt /MP_Data/task2/wuxia_novels /user/2020st42/finallab/preprocess_output
 ```
 
-## 任务二：CoOccurrance
+## 任务二：Cooccurrance
 
 本地执行方法不再赘述
 
