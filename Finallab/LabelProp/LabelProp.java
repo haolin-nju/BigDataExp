@@ -19,8 +19,8 @@ public class LabelProp {
     static {
         iters = 25;
         classes = 15;
-        books = new String[] { "", "飞狐外传", "雪山飞狐", "连城诀", "天龙八部", "射雕英雄传", "白马啸西风", "鹿鼎记", "笑傲江湖", "书剑恩仇录", "神雕侠侣", "侠客行",
-                "倚天屠龙记", "碧血剑", "鸳鸯刀", "越女剑" };
+        books = new String[] { "", "飞狐外传", "雪山飞狐", "连城诀", "天龙八部", "射雕英雄传", "白马啸西风", "鹿鼎记", "笑傲江湖", "书剑恩仇录", "神雕侠侣",
+                "侠客行", "倚天屠龙记", "碧血剑", "鸳鸯刀", "越女剑" };
         dict = new HashMap<String, Integer>();
         dict.put("胡斐", 1);
         dict.put("程灵素", 1);
@@ -73,21 +73,13 @@ public class LabelProp {
 
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            String[] buffer = value.toString().split("\\s+");
-            lpobj.name = buffer[0];
-            lpobj.label = 0;
-            lpobj.prob = 0;
-            lpobj.link = buffer[1];
+            lpobj.fromString1(value.toString());
             context.write(lpobj, NullWritable.get());
             lpobj.link = "null";
             int label = dict.get(lpobj.name) == null ? 0 : dict.get(lpobj.name);
-            /*
-             * if (label == 0) for (int i = 1; i <= classes; ++i) { lpobj.label = i;
-             * lpobj.prob = 1.0 / classes; context.write(lpobj, NullWritable.get()); } else
-             */
             for (int i = 1; i <= classes; ++i) {
                 lpobj.label = i;
-                lpobj.prob = i == label ? 1 : 0;
+                lpobj.prob = i == label ? 1.0 : 0.0;
                 context.write(lpobj, NullWritable.get());
             }
         }
@@ -100,7 +92,7 @@ public class LabelProp {
 
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            lpobj.fromString(value.toString());
+            lpobj.fromString2(value.toString());
             if (lpobj.label == 0) {
                 neigh.clear();
                 weight.clear();
@@ -110,7 +102,7 @@ public class LabelProp {
                     neigh.add(edge.substring(0, idx));
                     weight.add(Double.parseDouble(edge.substring(idx + 1)));
                 }
-                context.write(lpobj, new DoubleWritable(0));
+                context.write(lpobj, new DoubleWritable(0.0));
                 lpobj.link = "null";
             } else {
                 for (int i = 0; i < neigh.size(); ++i) {
@@ -121,15 +113,27 @@ public class LabelProp {
         }
     }
 
+    public static class LabelPropIterCombiner
+            extends Reducer<LabelPropObject, DoubleWritable, LabelPropObject, DoubleWritable> {
+        @Override
+        public void reduce(LabelPropObject key, Iterable<DoubleWritable> values, Context context)
+                throws IOException, InterruptedException {
+            double prob = 0.0;
+            for (DoubleWritable value : values)
+                prob += value.get();
+            context.write(key, new DoubleWritable(prob));
+        }
+    }
+
     public static class LabelPropIterReducer
             extends Reducer<LabelPropObject, DoubleWritable, LabelPropObject, NullWritable> {
         @Override
         public void reduce(LabelPropObject key, Iterable<DoubleWritable> values, Context context)
                 throws IOException, InterruptedException {
             if (dict.get(key.name) != null)
-                key.prob = dict.get(key.name) == key.label ? 1 : 0;
+                key.prob = dict.get(key.name) == key.label ? 1.0 : 0.0;
             else if (key.label != 0) {
-                double prob = 0;
+                double prob = 0.0;
                 for (DoubleWritable value : values)
                     prob += value.get();
                 key.prob = prob;
@@ -146,13 +150,13 @@ public class LabelProp {
 
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            lpobj.fromString(value.toString());
+            lpobj.fromString2(value.toString());
             if (!lpobj.name.equals(name)) {
                 if (name != null)
                     context.write(new IntWritable(label), new Text(name));
                 name = lpobj.name;
                 label = 0;
-                prob = 0;
+                prob = 0.0;
             } else if (lpobj.prob > prob) {
                 label = lpobj.label;
                 prob = lpobj.prob;
@@ -168,7 +172,8 @@ public class LabelProp {
 
     public static class LabelPropPostReducer extends Reducer<IntWritable, Text, Text, Text> {
         @Override
-        public void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+        public void reduce(IntWritable key, Iterable<Text> values, Context context)
+                throws IOException, InterruptedException {
             Text book = new Text(books[key.get()]);
             for (Text value : values)
                 context.write(value, book);
@@ -176,6 +181,7 @@ public class LabelProp {
     }
 
     public static void main(String[] args) throws Exception {
+        long begin = System.currentTimeMillis();
         Configuration conf = new Configuration();
         Job job = new Job(conf);
         job.setJarByClass(LabelProp.class);
@@ -190,6 +196,7 @@ public class LabelProp {
             job = new Job(conf);
             job.setJarByClass(LabelProp.class);
             job.setMapperClass(LabelPropIterMapper.class);
+            job.setCombinerClass(LabelPropIterCombiner.class);
             job.setReducerClass(LabelPropIterReducer.class);
             job.setMapOutputKeyClass(LabelPropObject.class);
             job.setMapOutputValueClass(DoubleWritable.class);
@@ -212,5 +219,7 @@ public class LabelProp {
         FileInputFormat.addInputPath(job, new Path(args[1] + "/data" + iters));
         FileOutputFormat.setOutputPath(job, new Path(args[1] + "/res"));
         job.waitForCompletion(true);
+        long end = System.currentTimeMillis();
+        System.out.println((end - begin) / 1000.0);
     }
 }

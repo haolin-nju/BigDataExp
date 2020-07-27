@@ -335,8 +335,12 @@ hdfs dfs -cat /user/2020st42/lab2/TFIDF_output/part-r-00000
 >
 > 2020.7.20
 >
-> > 完成Finallab任务四：Pageank
+> > 完成Finallab任务四：PageRank
 >
 > 2020.7.25
 >
 > > 完成Finallab的PageRank对比实验：Centrality
+> 
+> 2020.7.26
+>
+> > 完成Finallab任务五：LabelProp
