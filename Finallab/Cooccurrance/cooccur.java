@@ -21,7 +21,7 @@ public class cooccur {
         private Text fname;
         private Text sname;
         PairOfText() {
-            set(new Text(),new Text());//基本类型int，long等可以不用初始化，但是对象类型变量一定要new，因为反序列化是要读取数据到first和second，会出现空指针引用的问题。
+            set(new Text(),new Text());
         }
         void set(Text first, Text second) {
             this.fname = first;
@@ -67,13 +67,13 @@ public class cooccur {
             }
             i = 0;
             for(; i < newline.length; i ++){
-                int j = 0;
-                for(; j < newline.length; j ++){
-                    if ( i != j ) {
-                        PairOfText addpair = new PairOfText();
-                        addpair.set(new Text(newline[i]), new Text(newline[j]));
-                        context.write(addpair, new IntWritable(1));
-                    }
+                for(int j = i + 1; j < newline.length; j ++){
+                    PairOfText addpair = new PairOfText();
+                    addpair.set(new Text(newline[i]), new Text(newline[j]));
+                    context.write(addpair, new IntWritable(1));
+
+                    addpair.set(new Text(newline[j]), new Text(newline[i]));
+                    context.write(addpair, new IntWritable(1));
                 }
             }
         }
@@ -109,10 +109,10 @@ public class cooccur {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
 
-        job.setInputFormatClass(TextInputFormat.class);// read by row so that output by row
-        job.setOutputFormatClass(TextOutputFormat.class);// output by row to each file
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
 
-        job.setNumReduceTasks(5);// because there are 15 novels for JinYong
+        job.setNumReduceTasks(5);
 
         FileInputFormat.setInputPaths(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
