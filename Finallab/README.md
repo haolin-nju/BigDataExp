@@ -88,4 +88,18 @@ hadoop jar Centrality.jar CentralityDriver /user/2020st42/finallab/cooccur_outpu
 hadoop jar LabelProp.jar LabelProp /user/2020st42/finallab/normalization_output /user/2020st42/finallab/labelprop_output
 ```
 
+### Python脚本执行方法
+
+- `check.py`，输出正确率，需要待验证目录，例如
+
+```shell
+python3 check.py output
+```
+
+- `process.py`，输出`Gephi`所需格式顶点表格和边表格，输入是点目录（任务五）和边目录（任务二），例如
+
+```shell
+python3 process.py output ../Cooccurrance/output
+```
+
 ## 任务六：TODO
