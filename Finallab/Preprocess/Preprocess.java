@@ -23,7 +23,7 @@ import java.util.Set;
 
 public class Preprocess {
     public static class PreprocessMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
-        Set<String> nameSet = new HashSet<String>();
+        Set<String> nameSet = new HashSet<String>();//人名集合
 
         @Override
         protected void setup(Mapper.Context context) throws IOException, InterruptedException {
@@ -65,6 +65,7 @@ public class Preprocess {
                 }
 
                 //If this line has >=2 names, then emit key-val
+                //If this line has <2 names, ignore it
                 if (cnt >= 2) {
                     context.write(NullWritable.get(), new Text(lineNames.trim()));
                 }
@@ -74,21 +75,21 @@ public class Preprocess {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
-        conf.set("nameFile", args[0]);
+        conf.set("nameFile", args[0]);//人名列表文件路径
         Job job = new Job(conf, "Preprocess");
         job.setJarByClass(Preprocess.class);
 
         job.setMapperClass(Preprocess.PreprocessMapper.class);
 
-        job.setMapOutputKeyClass(NullWritable.class);// file name
-        job.setMapOutputValueClass(Text.class);// paragraph texts
-        job.setOutputKeyClass(NullWritable.class);// paragraph texts
-        job.setOutputValueClass(Text.class);// null
+        job.setMapOutputKeyClass(NullWritable.class);
+        job.setMapOutputValueClass(Text.class);
+        job.setOutputKeyClass(NullWritable.class);
+        job.setOutputValueClass(Text.class);
 
-        job.setInputFormatClass(TextInputFormat.class);// read by row so that output by row
-        job.setOutputFormatClass(TextOutputFormat.class);// output by row to each file
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
 
-        job.setNumReduceTasks(1);
+        job.setNumReduceTasks(5);
 
         // Three path args, first: nameList, second: novels, third: outputDir
         FileInputFormat.setInputPaths(job, new Path(args[1]));

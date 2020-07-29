@@ -47,6 +47,7 @@ public class PageRankViewer {
         public int compareTo(PageRankDoubleWritable prdw) {
             double prdw_pr = prdw.getPr();
             String prdw_name = prdw.getName();
+            // 按照PageRank值降序，人名升序的顺序排序
             return prdw_pr == pr ? str.compareTo(prdw_name) : (prdw_pr < pr ? -1 : 1);
         }
     }

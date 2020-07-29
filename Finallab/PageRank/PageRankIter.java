@@ -23,8 +23,10 @@ public class PageRankIter {
 //            int list_len = arr.length;
             for (String ss : arr) {
                 String[] cur_out = ss.split(",");
+                // 将当前人物的pr值发送给他链接的人物
                 context.write(new Text(cur_out[0]), new Text(String.valueOf(cur_rank * Double.valueOf(cur_out[1]))));
             }
+            // 发送当前的人物 + 链接关系
             context.write(key, new Text(link_list));
         }
     }
@@ -32,6 +34,7 @@ public class PageRankIter {
     public static class PageRankIterCombiner extends Reducer<Text, Text, Text, Text>{
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+            // 合并key相同的value
             double val = 0;
             for (Text t : values){
                 String cur_text = t.toString();
@@ -52,10 +55,10 @@ public class PageRankIter {
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             row_cnt = Integer.valueOf(context.getConfiguration().get("line_num"));
-//            System.out.println(row_cnt);
-            if (row_cnt < 1e-6) {
-                System.exit(100);
-            }
+            // System.out.println(row_cnt);
+            // if (row_cnt < 1e-6) {
+            //     System.exit(100);
+            // }
         }
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
@@ -74,11 +77,11 @@ public class PageRankIter {
             }
 
             double new_rank = 1.0;
-            if (row_cnt < 1e-6){
-                System.exit(1);
-            }
+            // if (row_cnt < 1e-6){
+            //     System.exit(1);
+            // }
             new_rank = (1 - d) / row_cnt + val * d;
-
+            // 发射计算之后的新的pr值
             context.write(key, new Text(new_rank + " " + link_list));
         }
     }

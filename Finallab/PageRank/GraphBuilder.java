@@ -24,7 +24,7 @@ public class GraphBuilder {
         }
         @Override
         protected void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-            // just set 1 to the cur_rank before link_list
+            // just set 1/N to the cur_rank before link_list
             context.write(key, new Text("" + 1.0 / row_cnt + value));
         }
     }
@@ -32,6 +32,7 @@ public class GraphBuilder {
     public static int main(String args[]) throws IOException, ClassNotFoundException, InterruptedException{
         Configuration conf = new Configuration();
         //ref Book P88-89
+        // 直接读取input中行数总数，对应总人数
         FileSystem hdfs = FileSystem.get(conf);
         int row_cnt = 0;
         String str;
@@ -55,6 +56,7 @@ public class GraphBuilder {
             e.printStackTrace();
         }
 //        System.out.println(row_cnt);
+        // 作为全局参数传递
         conf.set("Line Count",String.valueOf(row_cnt));
 
         Job job = new Job(conf, "Graph Builder");

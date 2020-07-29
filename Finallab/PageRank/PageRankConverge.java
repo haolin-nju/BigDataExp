@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class PageRankConverge {
+    // 判断是否收敛
     private static int pr_row_cnt;
 
     public static class NamePR {
@@ -54,6 +55,7 @@ public class PageRankConverge {
     static Comparator<NamePR> NamePRComparator = new Comparator<NamePR>() {
         @Override
         public int compare(NamePR o1, NamePR o2) {
+            // 比较两个对象的pr值
             double pr1 = o1.getPR();
             double pr2 = o2.getPR();
             return pr1 == pr2 ? 0 : pr1 < pr2 ? 1 : -1;
@@ -61,6 +63,7 @@ public class PageRankConverge {
     };
 
     private static void GetNameList(NamePR[] lines, FileSystem hdfs, FileStatus[] stats, FSDataInputStream in, Scanner scan) throws IOException {
+        // 读取pagerank结果，得到人名及对应的pr值
         int cur_idx = 0;
         String[] cur_line;
         for (int i = 0; i < stats.length; i++) {
@@ -98,12 +101,14 @@ public class PageRankConverge {
         FSDataInputStream in = null;
         Scanner scan = null;
         try {
+            // 迭代前pr值
             FileStatus[] stats = hdfs.listStatus(new Path(args[0]));
             GetNameList(lines_old, hdfs, stats, in, scan);
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
+            // 迭代后pr值
             FileStatus[] stats = hdfs.listStatus(new Path(args[1]));
             GetNameList(lines_new, hdfs, stats, in, scan);
         } catch (IOException e) {
@@ -121,6 +126,7 @@ public class PageRankConverge {
         String[] topk_name_old = topKFrequent(lines_old, top_cnt);
         String[] topk_name_new = topKFrequent(lines_new, top_cnt);
 
+        // 判断前N/5个是否相同
         for (int i = 0; i < top_cnt; ++i) {
             if (topk_name_old[i].equals(topk_name_new[i]) == false) {
                 return false;

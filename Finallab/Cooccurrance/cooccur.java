@@ -18,8 +18,8 @@ import java.util.Set;
 
 public class cooccur {
     public static class PairOfText implements WritableComparable<PairOfText> {
-        private Text fname;
-        private Text sname;
+        private Text fname;//同现关系人物1
+        private Text sname;//同现关系人物2
         PairOfText() {
             set(new Text(),new Text());
         }
@@ -55,9 +55,8 @@ public class cooccur {
     public static class CooccurMapper extends Mapper<LongWritable, Text, PairOfText, IntWritable>{
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            FileSplit inputSplit = (FileSplit)context.getInputSplit();
-            //Set value
             String[] line = value.toString().split(" ");
+            // 去重
             Set<String> set=new HashSet<String>(Arrays.asList(line));
             String[] newline = new String[set.size()];
             int i = 0;
@@ -66,6 +65,8 @@ public class cooccur {
                 i ++;
             }
             i = 0;
+
+            // 循环得到同现关系
             for(; i < newline.length; i ++){
                 for(int j = i + 1; j < newline.length; j ++){
                     PairOfText addpair = new PairOfText();
@@ -89,9 +90,11 @@ public class cooccur {
         @Override
         protected void reduce(PairOfText key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
             int sum = 0;
+            // 累加
             for(IntWritable v : values) {
                 sum += v.get();
             }
+            // 输出：<人物1，人物2>  出现次数
             context.write(new Text("<"+key.getFirst().toString()+","+key.getSecond().toString()+">"), new IntWritable(sum));
         }
     }

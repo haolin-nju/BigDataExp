@@ -14,7 +14,7 @@ public class PageRankDriver {
             forItr[0] = args[1] + "/Data" + i;
             forItr[1] = args[1] + "/Data" + (i + 1);
             PageRankIter.main(forItr, row_cnt, i + 1);
-            // We recognize that if the top row_cnt / 10 people are converged, this iteration is converged.
+            // We recognize that if the top row_cnt / 5 people are converged, this iteration is converged.
             if (PageRankConverge.main(forItr, row_cnt)) {
                 System.out.printf("Interation times: %d\n", (i + 1));
                 break;
