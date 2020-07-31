@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class cooccur {
+public class Cooccur {
     public static class PairOfText implements WritableComparable<PairOfText> {
         private Text fname;//同现关系人物1
         private Text sname;//同现关系人物2
@@ -100,12 +100,12 @@ public class cooccur {
     }
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
-        Job job = new Job(conf, "co_occurrance");
-        job.setJarByClass(cooccur.class);
+        Job job = new Job(conf, "Cooccurrance");
+        job.setJarByClass(Cooccur.class);
 
-        job.setMapperClass(cooccur.CooccurMapper.class);
-        job.setReducerClass(cooccur.CooccurReducer.class);
-        job.setPartitionerClass(cooccur.CooccurPartitioner.class);
+        job.setMapperClass(Cooccur.CooccurMapper.class);
+        job.setReducerClass(Cooccur.CooccurReducer.class);
+        job.setPartitionerClass(Cooccur.CooccurPartitioner.class);
 
         job.setMapOutputKeyClass(PairOfText.class);
         job.setMapOutputValueClass(IntWritable.class);

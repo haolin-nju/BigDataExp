@@ -89,7 +89,7 @@ public class Preprocess {
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
 
-        job.setNumReduceTasks(5);
+        job.setNumReduceTasks(1);
 
         // Three path args, first: nameList, second: novels, third: outputDir
         FileInputFormat.setInputPaths(job, new Path(args[1]));
