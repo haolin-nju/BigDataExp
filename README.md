@@ -265,7 +265,7 @@ jar cf invertedindex.jar Inverted*.class
 2. 将文件用scp命令上传到远程服务器，这里以lab2的TFIDF.jar文件为例：
 
 ```shell
-scp TFIDF.jar 2020st42@114.212.190.95:/home/2020st42/lab2/TFIDF.jar
+scp TFIDF.jar username@114.212.190.95:/home/username/lab2/TFIDF.jar
 ```
 
 服务器内需要存在lab2目录，该命令才可以把本地的TFIDF.jar文件直接写入服务器指定路径
@@ -273,7 +273,7 @@ scp TFIDF.jar 2020st42@114.212.190.95:/home/2020st42/lab2/TFIDF.jar
 3. ssh登录远端服务器：
 
 ```shell
-ssh 2020st42@114.212.190.95
+ssh username@114.212.190.95
 ```
 
 密码即为登陆密码，登录成功后可以用linux文件系统的命令检查刚刚上传的文件是否存在
@@ -282,7 +282,7 @@ ssh 2020st42@114.212.190.95
 
 ```shell
 cd lab2/
-hadoop jar TFIDF.jar TFIDF /data/exercise_2 /user/2020st42/lab2/TFIDF_output
+hadoop jar TFIDF.jar TFIDF /data/exercise_2 /user/username/lab2/TFIDF_output
 ```
 
 本次输入的数据文件在/data/exercise_2目录下，输出到lab2/TFIDF_output目录下
@@ -290,8 +290,8 @@ hadoop jar TFIDF.jar TFIDF /data/exercise_2 /user/2020st42/lab2/TFIDF_output
 5. 检查输出文件夹和其中一个输出文件：
 
 ```shell
-hdfs dfs -ls /user/2020st42/lab2/TFIDF_output
-hdfs dfs -cat /user/2020st42/lab2/TFIDF_output/part-r-00000
+hdfs dfs -ls /user/username/lab2/TFIDF_output
+hdfs dfs -cat /user/username/lab2/TFIDF_output/part-r-00000
 ```
 
 其余输出文件同理可以查看

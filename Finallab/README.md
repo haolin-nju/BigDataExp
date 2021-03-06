@@ -17,7 +17,7 @@
 - 执行命令
 
 ```shell
-hadoop jar Preprocess.jar Preprocess /MP_Data/task2/People_List_unique.txt /MP_Data/task2/wuxia_novels /user/2020st42/finallab/preprocess_output
+hadoop jar Preprocess.jar Preprocess /MP_Data/task2/People_List_unique.txt /MP_Data/task2/wuxia_novels /user/username/finallab/preprocess_output
 ```
 
 ## 任务二：Cooccurrance
@@ -29,7 +29,7 @@ hadoop jar Preprocess.jar Preprocess /MP_Data/task2/People_List_unique.txt /MP_D
 - 执行命令
 
 ```shell
-hadoop jar cooccur.jar cooccur /user/2020st42/finallab/preprocess_output/ /user/2020st42/finallab/cooccur_output
+hadoop jar cooccur.jar cooccur /user/username/finallab/preprocess_output/ /user/username/finallab/cooccur_output
 ```
 
 ## 任务三：Normalization
@@ -41,7 +41,7 @@ hadoop jar cooccur.jar cooccur /user/2020st42/finallab/preprocess_output/ /user/
 - 执行命令
 
 ```shell
-hadoop jar Normalization.jar Normalization /user/2020st42/finallab/cooccur_output /user/2020st42/finallab/normalization_output
+hadoop jar Normalization.jar Normalization /user/username/finallab/cooccur_output /user/username/finallab/normalization_output
 ```
 
 ## 任务四：PageRank
@@ -53,7 +53,7 @@ hadoop jar Normalization.jar Normalization /user/2020st42/finallab/cooccur_outpu
 - 执行命令
 
 ```shell
-hadoop jar PageRank.jar PageRankDriver /user/2020st42/finallab/normalization_output /user/2020st42/finallab/pagerank_output
+hadoop jar PageRank.jar PageRankDriver /user/username/finallab/normalization_output /user/username/finallab/pagerank_output
 ```
 
 ## PageRank对比实验：Centrality
@@ -73,7 +73,7 @@ hadoop jar PageRank.jar PageRankDriver /user/2020st42/finallab/normalization_out
 - 执行命令
 
 ```shell
-hadoop jar Centrality.jar CentralityDriver /user/2020st42/finallab/cooccur_output /user/2020st42/finallab/normalization_output /user/2020st42/finallab/centrality_output
+hadoop jar Centrality.jar CentralityDriver /user/username/finallab/cooccur_output /user/username/finallab/normalization_output /user/username/finallab/centrality_output
 ```
 
 ## 任务五：LabelProp
@@ -85,7 +85,7 @@ hadoop jar Centrality.jar CentralityDriver /user/2020st42/finallab/cooccur_outpu
 - 执行命令
 
 ```shell
-hadoop jar LabelProp.jar LabelProp /user/2020st42/finallab/normalization_output /user/2020st42/finallab/labelprop_output
+hadoop jar LabelProp.jar LabelProp /user/username/finallab/normalization_output /user/username/finallab/labelprop_output
 ```
 
 ### Python脚本执行方法
@@ -102,4 +102,3 @@ python3 check.py output
 python3 process.py output ../Cooccurrance/output
 ```
 
-## 任务六：TODO
